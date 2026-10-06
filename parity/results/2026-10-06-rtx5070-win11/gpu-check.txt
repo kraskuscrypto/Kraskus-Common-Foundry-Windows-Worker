@@ -1,0 +1,23 @@
+## 2026-10-06 17:12:01Z CMFD-WIN-QA
+## display devices (PnP)
+Microsoft Basic Display Adapter | status=OK | problem=CM_PROB_NONE | PCI\VEN_1234&DEV_1111&SUBSYS_11001AF4&REV_02\3&11583659&0&08
+NVIDIA GeForce RTX 5070 | status=OK | problem=CM_PROB_NONE | PCI\VEN_10DE&DEV_2F04&SUBSYS_89E61043&REV_A1\4&23F93F77&0&00E0
+## driver binding (Win32_VideoController)
+Microsoft Basic Display Adapter | driver 10.0.26100.1 (6/21/2006 12:00:00 AM) | status=OK | 0 MiB
+NVIDIA GeForce RTX 5070 | driver 32.0.16.1742 (9/30/2026 12:00:00 AM) | status=OK | 4095 MiB
+## nvidia-smi
+GPU 0: NVIDIA GeForce RTX 5070 (UUID: GPU-b61ed97f-7002-4d93-30e2-1f61b19ade25)
+name, uuid, driver_version, compute_cap, memory.total [MiB], power.limit [W], temperature.gpu, utilization.gpu [%], pstate
+NVIDIA GeForce RTX 5070, GPU-b61ed97f-7002-4d93-30e2-1f61b19ade25, 617.42, 12.0, 12227 MiB, 250.00 W, 46, 0 %, P8
+## GPU processes (nvidia-smi --query-compute-apps)
+1232, C:\Windows\System32\dwm.exe, [N/A]
+5348, C:\Windows\System32\ShellHost.exe, [N/A]
+6204, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe, [N/A]
+6880, C:\Windows\SystemApps\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\StartMenuExperienceHost.exe, [N/A]
+6856, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\SearchHost.exe, [N/A]
+6076, C:\Windows\explorer.exe, [N/A]
+## worker --help smoke (no GPU work)
+C:\cmfd\parity\cmfd-v4-replay.exe sha256 1f635cf62bdaf711071bc11f327dcc1dba6a17b8c36158f139ccb682d782cb05
+## memory / cores
+RAM total 10,172 MB free 7,596 MB
+cores: 6

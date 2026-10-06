@@ -1,0 +1,42 @@
+[17:12:18] worker  C:\cmfd\parity\cmfd-v4-replay.exe sha256 1f635cf62bdaf711071bc11f327dcc1dba6a17b8c36158f139ccb682d782cb05
+[17:12:23] ok  search-coefficients.bin 5accd4f138282995ee30b2fe800d0fb8df5dfb9918f1ccfe378aa0855faafec1
+[17:12:23] ok  full-digests.txt 57cd287b9a308a6a2bed7aa636e0921ca1bcbcb8328da41df311661b96dc2f44
+[17:12:23] ok  capture-manifest.json 3ee464b236eb818d38955dd9a4e3f60ec5d823422fea855bab945bcdb71328ef
+[17:12:23] ok  GOLDEN-INPUTS.json 801a030cc6d266de5b4e60a863e0fa80551696db49fdd92f53d96a5e7bd9cf80
+[17:12:23] ok  full-coefficients.bin a0d2a46bf61ebae30de81eb86600d793c434927792eccef20b3a864a34323261
+[17:12:23] ok  search-digests.txt c01e1ae1bc1b7c0f434554c579a10ff281e4b5ce446121f4c74f12c4f5ea9494
+[17:12:23] nvidia-smi: NVIDIA GeForce RTX 5070, GPU-b61ed97f-7002-4d93-30e2-1f61b19ade25, 617.42, 12227 MiB
+[17:17:43] ok  MODEL-V2.bank 5f9b213c3bda51b74e4ebabb26607b67385d613aa8d99af915a48ab063e17d4e
+[17:17:43] self-test ...
+[17:17:44]   device=NVIDIA GeForce RTX 5070 compute=12.0
+[17:17:44]   gemm_backend=sm80_m16n8k32_blackwell_sw8_batch
+[17:17:44]   small_differential=EXACT
+[17:17:44]   dp4a_differential=EXACT tails_and_signed_extremes production_k=4096
+[17:17:44]   replay_self_test=EXACT
+[17:17:44] compare (10240 search nonces as RUNBATCH 32 + 8 RUN full) ...
+[17:28:59]   search batches 80/320
+[17:29:02]   search batches 96/320
+[17:29:02]   search batches 112/320
+[17:29:02]   search batches 128/320
+[17:29:02]   search batches 144/320
+[17:29:02]   search batches 160/320
+[17:29:02]   search batches 176/320
+[17:29:02]   search batches 192/320
+[17:29:02]   search batches 208/320
+[17:29:02]   search batches 224/320
+[17:29:02]   search batches 240/320
+[17:29:02]   search batches 256/320
+[17:29:02]   search batches 272/320
+[17:29:02]   search batches 288/320
+[17:29:02]   search batches 304/320
+[17:29:02]   search batches 320/320
+[17:29:02]   full replays 1/8
+[17:29:02]   full replays 2/8
+[17:29:02]   full replays 3/8
+[17:29:06]   full replays 4/8
+[17:29:06]   full replays 5/8
+[17:29:06]   full replays 6/8
+[17:29:06]   full replays 7/8
+[17:29:06]   full replays 8/8
+[17:29:06]   COMPARE 10272 items, 0 mismatches
+[17:29:06] compare exit 0 after 675 s

@@ -76,6 +76,12 @@ jobs:
         with:
           name: cmfd-v4-replay-windows-x64
           path: artifact
+      - name: refuse to publish a build that is not the qualified one
+        run: |
+          got=$(sha256sum artifact/cmfd-v4-replay.exe | cut -d' ' -f1); want=$(tr -d ' 
+' < parity/QUALIFIED-SHA256)
+          echo "rebuilt=$got qualified=$want"
+          test "$got" = "$want" || { echo 'rebuilt binary differs from parity/QUALIFIED-SHA256; publish the qualified artifact manually or re-qualify'; exit 1; }
       - name: package
         run: |
           V=${GITHUB_REF_NAME#v}
@@ -88,4 +94,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" release/*.zip release/SHA256SUMS --title "kraskus-cmfd-v4-replay $GITHUB_REF_NAME (windows-x64)" --notes "Native Windows build of the Common Foundry ProductionV4 replay worker from unmodified upstream MIT source @ 3aa5369 (v1.0.8), CUTLASS 3.9.2, CUDA 12.8. Hashes: SHA256SUMS. Not qualified for use until parity/ reports PASS for this build; see CHANGELOG.md." --verify-tag
+          gh release create "$GITHUB_REF_NAME" release/*.zip release/SHA256SUMS --title "kraskus-cmfd-v4-replay $GITHUB_REF_NAME (windows-x64)" --notes "Native Windows build of the Common Foundry ProductionV4 replay worker from unmodified upstream MIT source @ 3aa5369 (v1.0.8), CUTLASS 3.9.2, CUDA 12.8. Hashes: SHA256SUMS. Hash verified equal to parity/QUALIFIED-SHA256 (golden parity PASS, see parity/results/); see CHANGELOG.md." --verify-tag

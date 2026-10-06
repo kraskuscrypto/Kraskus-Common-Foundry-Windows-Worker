@@ -33,6 +33,8 @@ Output: `build\windows-x64\cmfd-v4-replay.exe`, `images-elf.txt`, `images-ptx.tx
 
 The worker must be **bit-identical** to the official CUDA worker (`cmfd-v4-replay`, sha256 `f872912bdc3431642e509a634caa2844f347e220ed7b58a02cf2ec874387c5f1`, from the signed v1.0.8 Linux package) over the Kraskus golden set: **10,240 search nonces (RUNBATCH 32) and 8 full-trace nonces**, every per-nonce output hash and every kept file equal to the official capture (RTX 5070, 2026-10-02). `parity/run-parity.ps1` runs the worker's own `--self-test` and then the comparison on a Windows host with an NVIDIA GPU (≥ 8 GB, compute capability ≥ 7.0). See [parity/README.md](parity/README.md).
 
+**Status (2026-10-06): PASS** for `cmfd-v4-replay.exe` sha256 `1f635cf62bdaf711071bc11f327dcc1dba6a17b8c36158f139ccb682d782cb05` (release `v1.0.8.1`): self-test EXACT, `COMPARE 10272 items, 0 mismatches` on an RTX 5070 under Windows 11 with driver 617.42. Record: [parity/results/2026-10-06-rtx5070-win11/](parity/results/2026-10-06-rtx5070-win11/README.md). The release job only publishes a build whose hash equals [parity/QUALIFIED-SHA256](parity/QUALIFIED-SHA256).
+
 Status: see [CHANGELOG.md](CHANGELOG.md).
 
 ## Interface (unchanged from upstream)
