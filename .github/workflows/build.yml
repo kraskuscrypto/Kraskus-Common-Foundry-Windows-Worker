@@ -78,8 +78,7 @@ jobs:
           path: artifact
       - name: refuse to publish a build that is not the qualified one
         run: |
-          got=$(sha256sum artifact/cmfd-v4-replay.exe | cut -d' ' -f1); want=$(tr -d ' 
-' < parity/QUALIFIED-SHA256)
+          got=$(sha256sum artifact/cmfd-v4-replay.exe | cut -d' ' -f1); want=$(tr -d ' \r\n' < parity/QUALIFIED-SHA256)
           echo "rebuilt=$got qualified=$want"
           test "$got" = "$want" || { echo 'rebuilt binary differs from parity/QUALIFIED-SHA256; publish the qualified artifact manually or re-qualify'; exit 1; }
       - name: package
