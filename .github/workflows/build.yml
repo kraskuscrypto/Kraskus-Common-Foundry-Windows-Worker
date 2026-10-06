@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NVIDIA/cutlass
-          ref: ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e
+          ref: v3.9.2  # == ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e, verified by the pin step below
           path: third_party/cutlass
       - name: pins must match
         shell: pwsh
