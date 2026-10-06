@@ -13,3 +13,4 @@
 ## v1.0.8.1 (2026-10-06)
 
 - First release: the qualified build above, packaged as `kraskus-cmfd-v4-replay-1.0.8.1-windows-x64.zip` + `SHA256SUMS`. Version = upstream 1.0.8 + Kraskus build 1.
+- Release assets are the exact artifact of CI run 37504117625 (the qualified binary), packaged by hand: the tag rebuild (run 37535363575, nvcc 12.8.61) produced `b5fcc5b3…`, which the release job refused as designed. The two binaries differ in exactly 4 bytes (offsets 288-289 and 427332-427333: the PE COFF `TimeDateStamp` and the debug-directory timestamp); every GPU image and all code bytes are identical. Follow-up: make the gate compare with those two timestamps zeroed, or link with `/Brepro`, so a rebuild can publish itself.
