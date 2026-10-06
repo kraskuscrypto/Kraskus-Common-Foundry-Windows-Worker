@@ -45,7 +45,7 @@ jobs:
           $cl = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name | Select-Object -Last 1).Name
           @{ nvcc = $v; msvc_tools = $cl; cutlass = "ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e"; upstream = "3aa5369512f47d0b3c49a49a54a0395e71e0c000"; source_sha256 = "d4c30e99883506b2e00ba9cecb41177b70e066c2be79da1400a1fea7feafc999"; built_at = (Get-Date).ToUniversalTime().ToString("o"); commit = "${{ github.sha }}" } | ConvertTo-Json | Set-Content build/windows-x64/BUILDINFO.json
           Get-Content build/windows-x64/BUILDINFO.json
-      - name: smoke (no GPU on the runner: the binary must start and fail closed)
+      - name: "smoke (no GPU on the runner: the binary must start and fail closed)"
         shell: pwsh
         run: |
           $p = Start-Process -FilePath build/windows-x64/cmfd-v4-replay.exe -ArgumentList "--self-test" -NoNewWindow -PassThru -Wait -RedirectStandardError err.txt -RedirectStandardOutput out.txt
