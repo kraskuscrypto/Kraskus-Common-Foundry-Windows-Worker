@@ -1,4 +1,4 @@
-build/
+build/windows-x64/
 third_party/
 parity/golden/search-coefficients.bin
 parity/golden/full-coefficients.bin

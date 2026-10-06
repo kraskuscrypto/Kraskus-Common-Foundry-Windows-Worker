@@ -1,0 +1,2 @@
+# No end-of-line conversion anywhere: the pinned upstream source must stay byte-exact.
+* -text
