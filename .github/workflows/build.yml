@@ -1,0 +1,85 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  windows:
+    name: windows-x64 (CUDA 12.8, MSVC 2022)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: CUTLASS at the pinned commit (BSD-3, header-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NVIDIA/cutlass
+          ref: ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e
+          path: third_party/cutlass
+      - name: pins must match
+        shell: pwsh
+        run: |
+          $src = (Get-FileHash src/koala_four_limb_replay.cu -Algorithm SHA256).Hash.ToLower()
+          if ($src -ne "d4c30e99883506b2e00ba9cecb41177b70e066c2be79da1400a1fea7feafc999") { throw "worker source hash changed: $src" }
+          $cut = (git -C third_party/cutlass rev-parse HEAD).Trim()
+          if ($cut -ne "ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e") { throw "CUTLASS commit is $cut" }
+      - uses: Jimver/cuda-toolkit@v0.2.36
+        id: cuda
+        with:
+          cuda: "12.8.0"
+          method: network
+          sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
+      - name: build
+        shell: cmd
+        env:
+          CUDA_PATH: ${{ steps.cuda.outputs.CUDA_PATH }}
+          CUTLASS_ROOT: ${{ github.workspace }}\third_party\cutlass
+          VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+        run: build\build-windows.cmd
+      - name: record toolchain
+        shell: pwsh
+        run: |
+          $v = (& "${{ steps.cuda.outputs.CUDA_PATH }}\bin\nvcc.exe" --version | Select-String "release").Line.Trim()
+          $cl = (Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" | Sort-Object Name | Select-Object -Last 1).Name
+          @{ nvcc = $v; msvc_tools = $cl; cutlass = "ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e"; upstream = "3aa5369512f47d0b3c49a49a54a0395e71e0c000"; source_sha256 = "d4c30e99883506b2e00ba9cecb41177b70e066c2be79da1400a1fea7feafc999"; built_at = (Get-Date).ToUniversalTime().ToString("o"); commit = "${{ github.sha }}" } | ConvertTo-Json | Set-Content build/windows-x64/BUILDINFO.json
+          Get-Content build/windows-x64/BUILDINFO.json
+      - name: smoke (no GPU on the runner: the binary must start and fail closed)
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath build/windows-x64/cmfd-v4-replay.exe -ArgumentList "--self-test" -NoNewWindow -PassThru -Wait -RedirectStandardError err.txt -RedirectStandardOutput out.txt
+          "exit $($p.ExitCode)"; Get-Content err.txt
+          if ($p.ExitCode -ne 1) { throw "expected exit 1 without a CUDA device" }
+          if (-not (Select-String -Path err.txt -Pattern "^error: " -Quiet)) { throw "expected an error: line on stderr" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cmfd-v4-replay-windows-x64
+          path: build/windows-x64/*
+
+  release:
+    name: release (tags only)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: cmfd-v4-replay-windows-x64
+          path: artifact
+      - name: package
+        run: |
+          V=${GITHUB_REF_NAME#v}
+          D=kraskus-cmfd-v4-replay-$V-windows-x64
+          mkdir -p release/$D
+          cp artifact/cmfd-v4-replay.exe artifact/BUILDINFO.json artifact/images-elf.txt artifact/images-ptx.txt release/$D/
+          cp LICENSE LICENSE-UPSTREAM-MIT LICENSE-CUTLASS-BSD-3 THIRD_PARTY_NOTICES.md UPSTREAM.md release/$D/
+          (cd release && zip -qr $D.zip $D && sha256sum $D.zip > SHA256SUMS && sha256sum $D/cmfd-v4-replay.exe >> SHA256SUMS && cat SHA256SUMS)
+      - name: github release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/*.zip release/SHA256SUMS --title "kraskus-cmfd-v4-replay $GITHUB_REF_NAME (windows-x64)" --notes "Native Windows build of the Common Foundry ProductionV4 replay worker from unmodified upstream MIT source @ 3aa5369 (v1.0.8), CUTLASS 3.9.2, CUDA 12.8. Hashes: SHA256SUMS. Not qualified for use until parity/ reports PASS for this build; see CHANGELOG.md." --verify-tag

@@ -1,0 +1,9 @@
+build/
+third_party/
+parity/golden/search-coefficients.bin
+parity/golden/full-coefficients.bin
+parity/golden/search-digests.txt
+parity/tools/
+parity/scratch/
+parity/results/*/02-compare.txt
+*.part
