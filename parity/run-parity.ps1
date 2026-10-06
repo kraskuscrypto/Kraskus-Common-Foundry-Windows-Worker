@@ -19,7 +19,9 @@ param(
   [Parameter(Mandatory = $true)][string]$Bank,
   [string]$Worker = (Join-Path $PSScriptRoot "..\build\windows-x64\cmfd-v4-replay.exe"),
   [string]$Scratch = (Join-Path $PSScriptRoot "scratch"),
-  [switch]$DownloadBank
+  [switch]$DownloadBank,
+  # Verify inputs and the bank (downloading it if asked) and stop: for staging a host before its GPU is attached.
+  [switch]$StageOnly
 )
 $ErrorActionPreference = "Stop"
 $golden = Join-Path $PSScriptRoot "golden"
@@ -52,7 +54,7 @@ $bases = @("https://downloads.commonfoundry.ai/v0.1.0-rc.1", "https://github.com
 
 Log "worker  $Worker sha256 $(Sha $Worker)"
 foreach ($k in $pins.Keys) { Expect (Join-Path $golden $k) $pins[$k] }
-Log "nvidia-smi: $((& nvidia-smi --query-gpu=name,uuid,driver_version,memory.total --format=csv,noheader) -join ' | ')"
+if (-not $StageOnly) { Log "nvidia-smi: $((& nvidia-smi --query-gpu=name,uuid,driver_version,memory.total --format=csv,noheader) -join ' | ')" }
 
 # ---- model bank ----
 if (-not (Test-Path -LiteralPath $Bank)) {
@@ -78,6 +80,7 @@ if (-not (Test-Path -LiteralPath $Bank)) {
 }
 if ((Get-Item -LiteralPath $Bank).Length -ne $bankBytes) { throw "bank has the wrong length" }
 Expect $Bank $bankSha
+if ($StageOnly) { Log "stage-only: inputs, tools and bank verified; GPU steps skipped"; exit 0 }
 
 # ---- 1. official self-test on this GPU ----
 Log "self-test ..."
