@@ -17,16 +17,20 @@ GitHub fallback), verifies each part, assembles MODEL-V2.bank and verifies the w
 #>
 param(
   [Parameter(Mandatory = $true)][string]$Bank,
-  [string]$Worker = (Join-Path $PSScriptRoot "..\build\windows-x64\cmfd-v4-replay.exe"),
-  [string]$Scratch = (Join-Path $PSScriptRoot "scratch"),
+  # Defaults are resolved below: Windows PowerShell 5.1 leaves $PSScriptRoot empty while binding parameter defaults.
+  [string]$Worker = "",
+  [string]$Scratch = "",
   [switch]$DownloadBank,
   # Verify inputs and the bank (downloading it if asked) and stop: for staging a host before its GPU is attached.
   [switch]$StageOnly
 )
 $ErrorActionPreference = "Stop"
-$golden = Join-Path $PSScriptRoot "golden"
-$tools = Join-Path $PSScriptRoot "tools"
-$out = Join-Path $PSScriptRoot ("results\" + (Get-Date -Format "yyyy-MM-dd-HHmm") + "-" + $env:COMPUTERNAME.ToLower())
+$root = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+if (-not $Worker) { $Worker = Join-Path $root "..\build\windows-x64\cmfd-v4-replay.exe" }
+if (-not $Scratch) { $Scratch = Join-Path $root "scratch" }
+$golden = Join-Path $root "golden"
+$tools = Join-Path $root "tools"
+$out = Join-Path $root ("results\" + (Get-Date -Format "yyyy-MM-dd-HHmm") + "-" + $env:COMPUTERNAME.ToLower())
 New-Item -ItemType Directory -Force $out, $Scratch | Out-Null
 $log = Join-Path $out "00-run.log"
 function Log($m) { $line = "[{0}] {1}" -f (Get-Date -Format "HH:mm:ss"), $m; $line; Add-Content $log $line }
