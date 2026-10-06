@@ -12,12 +12,18 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-      - name: CUTLASS at the pinned commit (BSD-3, header-only)
+      - name: git long paths (CUTLASS example file names exceed MAX_PATH on Windows)
+        run: git config --global core.longpaths true
+      - name: CUTLASS at the pinned commit (BSD-3, header-only; only include/ is needed)
         uses: actions/checkout@v4
         with:
           repository: NVIDIA/cutlass
           ref: v3.9.2  # == ad7b2f5e84fcfa124cb02b91d5bd26d238c0459e, verified by the pin step below
           path: third_party/cutlass
+          sparse-checkout: |
+            include
+            LICENSE.txt
+          sparse-checkout-cone-mode: true
       - name: pins must match
         shell: pwsh
         run: |
