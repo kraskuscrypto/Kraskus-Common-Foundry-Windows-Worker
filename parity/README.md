@@ -16,6 +16,8 @@ A build of `cmfd-v4-replay.exe` is qualified only when it is **byte-identical** 
 
 On a Windows x64 host with an NVIDIA GPU (≥ 8 GB VRAM, compute capability ≥ 7.0, driver ≥ 570 for CUDA 12.8), with `golden/` completed by the coefficient files above and `tools/cmfd-v4-capture.exe` present:
 
+> The harness tools under `tools/` (`cmfd-v4-capture.exe`, `cmfd-v4-conformance.exe`, `cmfd-v4-ref-worker.exe`, Windows builds of `apps/common-foundry/alt-worker`) must be built with a **static CRT** (`RUSTFLAGS=-C target-feature=+crt-static`): a clean Windows 11 install has no `vcruntime140.dll`, and a dynamic-CRT build exits with `0xC0000135` (STATUS_DLL_NOT_FOUND) before comparing anything. This was hit on 2026-10-06 in the first RTX 5070 window (results `2026-10-06-1923`, self-test EXACT, compare not executed). Static builds used since: capture `f0596e6f…`, conformance `38f91d6b…`, ref-worker `e542438a…`.
+
 ```powershell
 .\run-parity.ps1 -Bank D:\cmfd\MODEL-V2.bank -Worker ..\build\windows-x64\cmfd-v4-replay.exe [-DownloadBank]
 ```
